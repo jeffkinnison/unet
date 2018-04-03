@@ -177,6 +177,7 @@ class UpConv(nn.Module):
         The convolutional layer that operates on the upsampled data.
     """
     def __init__(self, in_channels, out_channels, shape):
+        super(UpConv, self).__init__()
         self.upsample = nn.Upsample(scale_factor=(1, 2, 2), mode='bilinear')
         self.conv = nn.Conv3d(in_channels, out_channels, shape)
 
