@@ -146,7 +146,6 @@ def unet3d(input_shape, data_format='channels_first'):
        (pp. 424-432). Springer, Cham.
     """
     i = Input(shape=input_shape)
-    print(i._keras_shape)
 
     down1, c1 = downconv_block(i, 16, 3)
     down2, c2 = downconv_block(down1, 32, 3)
