@@ -190,16 +190,22 @@ class UpConv(nn.Module):
     ----------
     upsample : `torch.nn.Upsample`
         Upsample the data in 2d.
+    pad : `torch.nn.ReplicationPad2d`
+        Pad the data to maintain shape. a 2x2 convolution shaves one pixel off
+        of the input data in each dimension. `torch.nn.Conv2d` layers do not
+        currently support single-pixel padding, so this extra layer is needed.
     conv : `torch.nn.Conv2d`
         The convolutional layer that operates on the upsampled data.
     """
     def __init__(self, in_channels, out_channels, shape):
         super(UpConv, self).__init__()
         self.upsample = nn.Upsample(scale_factor=(2, 2), mode='bilinear')
+        self.pad = nn.ReplicationPad2d((0, 1, 0, 1))
         self.conv = nn.Conv2d(in_channels, out_channels, shape)
 
-    def forward(x):
+    def forward(self, x):
         x = self.upsample(x)
+        x = self.pad(x)
         x = F.relu(self.conv(x))
         return x
 
