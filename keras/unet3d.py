@@ -170,7 +170,7 @@ def unet3d(input_shape, data_format='channels_first'):
                   padding='same', data_format=data_format)(concat)
     out2 = Conv3D(16, 3, activation='relu',
                   padding='same', data_format=data_format)(out1)
-    out3 = Conv3D(1, 1, activation='relu',
+    out3 = Conv3D(1, 1, activation='sigmoid',
                   padding='same', data_format=data_format)(out2)
 
     model = Model(inputs=[i], outputs=[out3])

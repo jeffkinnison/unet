@@ -144,30 +144,36 @@ def unet(input_shape, data_format='channels_first'):
     """
     i = Input(shape=input_shape)
 
-    down1, c1 = downconv_block(i, 16, 3)
-    down2, c2 = downconv_block(down1, 32, 3)
-    down3, c3 = downconv_block(down2, 64, 3)
+    down1, c1 = downconv_block(i, 64, 3)
+    down2, c2 = downconv_block(down1, 128, 3)
+    down3, c3 = downconv_block(down2, 256, 3)
+    down4, c4 = downconv_block(down3, 512, 3)
 
-    up1 = upconv_block(down3, 128, 3)
-    crop1 = crop(c3, up1)
+    up1 = upconv_block(down4, 1024, 3)
+    crop1 = crop(c4, up1)
     merge_block = [up1, crop1]
     concat = concatenate(merge_block, axis=1)
 
-    up2 = upconv_block(concat, 64, 3)
-    crop2 = crop(c2, up2)
+    up2 = upconv_block(concat, 512, 3)
+    crop2 = crop(c3, up2)
     merge_block = [up2, crop2]
     concat = concatenate(merge_block, axis=1)
 
-    up3 = upconv_block(concat, 32, 3)
-    crop3 = crop(c1, up3)
+    up3 = upconv_block(concat, 256, 3)
+    crop3 = crop(c2, up3)
     merge_block = [up3, crop3]
     concat = concatenate(merge_block, axis=1)
 
+    up4 = upconv_block(concat, 128, 3)
+    crop3 = crop(c1, up3)
+    merge_block = [up3, crop3]
+    concat = concatenate(merge_block, axis=1)
+    
     out1 = Conv2D(16, 3, activation='relu',
                   padding='same', data_format=data_format)(concat)
     out2 = Conv2D(16, 3, activation='relu',
                   padding='same', data_format=data_format)(out1)
-    out3 = Conv2D(1, 1, activation='relu',
+    out3 = Conv2D(1, 1, activation='sigmoid'
                   padding='same', data_format=data_format)(out2)
 
     model = Model(inputs=[i], outputs=[out3])
